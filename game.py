@@ -193,7 +193,7 @@ class Game(object):
 		self.high_scores = {}
 
 		if not android:
-			self.database = EncryptedDatabase('highscores.encrypted', 'password')
+			self.database = EncryptedDatabase('highscores.encrypted', b'password')
 			self.load_scores()
 
 		self.clock = pygame.time.Clock()
@@ -378,8 +378,8 @@ class Game(object):
 					object_list.append(self.character)
 					for body in object_list:
 						x, y = int(body._x), int(body._y)
-						if event.pos[0] in xrange(x, x + body.width):
-							if event.pos[1] in xrange(y, y + body.height):
+						if event.pos[0] in range(x, x + body.width):
+							if event.pos[1] in range(y, y + body.height):
 								body.mouse_hold = event.type is pygame.MOUSEBUTTONDOWN
 								break
 						if body.mouse_hold:
@@ -529,8 +529,6 @@ def run(resolution):
 
 # Android's interpreter will execute main by default
 def main():
-	global f
-	f = open("traceback.txt", 'w')
 	import sys
 	import traceback
 	try:
@@ -542,9 +540,8 @@ def main():
 				break
 		run(mode)
 	except:
-		global f
-		traceback.print_exception(sys.exc_type, sys.exc_value, sys.exc_traceback, None, f) #@UndefinedVariable
-		f.close()
+		with open("traceback.txt", 'w') as f:
+			traceback.print_exception(sys.exc_info()[0], sys.exc_info()[1], sys.exc_info()[2], None, f)
 
 
 # __name__ != __main__ on android

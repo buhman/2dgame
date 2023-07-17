@@ -10,17 +10,18 @@ class EncryptedDatabase(object):
 
     def load_database(self):
         if os.path.exists(self.filename):
-            f = open(self.filename, 'r')
+            f = open(self.filename, 'rb')
         else:
-            open(self.filename, 'w').close()
-            f = open(self.filename, 'r')
+            open(self.filename, 'wb').close()
+            f = open(self.filename, 'rb')
 
         plaintext = self.decrypt(f.read())
         f.close()
-        return json.loads(plaintext)
+        print(plaintext)
+        return json.loads(plaintext.decode('utf-8').rstrip('*'))
 
     def save_database(self, database):
-        f = open(self.filename, 'w')
+        f = open(self.filename, 'wb')
         plaintext = json.dumps(database)
         ciphertext = self.encrypt(plaintext)
         f.write(ciphertext)
@@ -49,14 +50,16 @@ class EncryptedDatabase(object):
     def encrypt(self, plaintext):
         length = math.ceil(len(plaintext) / 8.0) * 8
         format_string = '{0:*<%d}' % length
-        des_text = format_string.format(plaintext)
+        des_text = format_string.format(plaintext).encode('utf-8')
 
         return self.key.encrypt(des_text)
 
 if __name__ == "__main__":
     database = {'a':'1', 'b':'2'}
-    d = EncryptedDatabase("file.txt", "password")
-    d2 = EncryptedDatabase("file.txt", "failword")
+    d = EncryptedDatabase("file.txt", b"password")
+    d2 = EncryptedDatabase("file.txt", b"failword")
     d.save_database(database)
-    print d.load_database()
-    print d2.load_database()
+    print(d.load_database())
+    # note: it was originally expected that d2.load_database() would
+    # fail.
+    print(d2.load_database())

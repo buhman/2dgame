@@ -3,14 +3,13 @@ pygame.init()
 s = pygame.image.load("icon.ico")
 s_ = pygame.image.tostring(s, "RGB")
 
-output = open("icon.py", 'w')
+output = open("icon.py", 'wb')
 
-output.write('# -*- coding: utf-8 -*-\ntext = """')
+output.write(b'text = ')
 
-output.write(s_)
+output.write(repr(s_).encode('utf-8'))
 
-output.write('"""')
-output.write("\n")
+output.write(b"\n")
 output.close()
 pygame.quit()
-print "Generated icon"
+print("Generated icon")
